@@ -7,8 +7,17 @@ from flask_sqlalchemy import SQLAlchemy
 # Import Marshmallow ORM
 from flask_marshmallow import Marshmallow
 
+# Import necessary helpers
+from app.helpers.main_helper import send_response
+
+# Import middlewares
+from app.middlewares.auth import Auth
+
 # Define the WSGI application object
 app = Flask(__name__)
+
+# Calling middlewares
+app.wsgi_app = Auth(app.wsgi_app)
 
 # Configurations
 app.config.from_object('config')
@@ -25,7 +34,12 @@ ma = Marshmallow(app)
 def not_found(error):
     return render_template('404.html'), 404
 
-# Import a module / component using its blueprint handler variable (mod_auth)
+# Hello World
+@app.route('/')
+def hello_world():
+    return send_response('Hello World!', '', 200)
+
+# Import a module / component using its blueprint handler variable (users)
 from app.modules.users.controller import users
 
 # Register blueprint(s)
